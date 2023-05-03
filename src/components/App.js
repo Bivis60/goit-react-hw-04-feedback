@@ -1,46 +1,53 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { GlobalStyle } from './GlobalStyle';
 import { FeedbackCard } from './FeedbackOptions/FeedbackOptions';
 import { StatisticsList } from './Statistics/Statistics';
 import { Section } from 'Section/Section';
 import { Layout } from './Layout/Layout';
 
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+
+export const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const feedbacks = { good, neutral, bad };
+
+  const onAddFeedback = event => {
+    switch (event) {
+      case 'good':
+        setGood(good + 1);
+        break;
+      case 'neutral':
+        setNeutral(neutral + 1);
+        break;
+      case 'bad':
+        setBad(bad + 1);
+        break;
+      default:
+        break;
+    }
   };
 
-  onAddGood = event => {
-    this.setState({ [event]: this.state[event] + 1 });
+  const countTotalFeedback = () => good + neutral + bad;
+
+  const countPositiveFeedbackPercentage = () => {
+    return Math.round((good / countTotalFeedback()) * 100 || 0);
   };
 
-  countTotalFeedback = ({ good, neutral, bad }) => good + neutral + bad;
-
-  countPositiveFeedbackPercentage = ({ good }) =>
-    Math.round((good / this.countTotalFeedback(this.state)) * 100);
-
-  render() {
-    return (
-      <Layout>
-        <GlobalStyle />
-        <Section title="Please leave feedback">
-          <FeedbackCard
-            onAdd={this.onAddGood}
-            options={Object.keys(this.state)}
-          />
-        </Section>
-        <Section title="Statistics:">
-          <StatisticsList
-            feedbacks={this.state}
-            total={this.countTotalFeedback(this.state)}
-            positivePercentages={this.countPositiveFeedbackPercentage(
-              this.state
-            )}
-          />
-        </Section>
-      </Layout>
-    );
-  }
-}
+  return (
+    <Layout>
+      <GlobalStyle />
+      <Section title="Please leave feedback">
+        <FeedbackCard onAdd={onAddFeedback} options={Object.keys(feedbacks)} />
+      </Section>
+      <Section title="Statistics:">
+        <StatisticsList
+          feedbacks={feedbacks}
+          total={countTotalFeedback()}
+          positivePercentages={countPositiveFeedbackPercentage(feedbacks)}
+        />
+      </Section>
+    </Layout>
+  );
+};

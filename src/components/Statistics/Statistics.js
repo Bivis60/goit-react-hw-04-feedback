@@ -8,6 +8,7 @@ import {
   PositivePercentages,
   Notification,
 } from './Statistics.styled';
+
 export const StatisticsList = ({
   feedbacks,
   total = 0,
